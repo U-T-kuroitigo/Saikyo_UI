@@ -1,15 +1,15 @@
 以下コンソールで実行
-go mod init github.com/U-T-kuroitigo/eaticle_go_server
+go mod init github.com/U-T-kuroitigo/Saikyo_UI
 go get -u github.com/labstack/echo/...
 go get -u gorm.io/gorm
 go get -u gorm.io/driver/mysql
-go get github.com/U-T-kuroitigo/eaticle_go_server
+go get github.com/U-T-kuroitigo/Saikyo_UI
 go get github.com/joho/godotenv
 go get "github.com/go-playground/validator/v10"
 go mod tidy
 
 開発環境用
-replace github.com/U-T-kuroitigo/eaticle_go_server => //ローカルフォルダの絶対パス
+replace github.com/U-T-kuroitigo/Saikyo_UI => //ローカルフォルダの絶対パス
 
 .envファイルを作成
 ファイル内に以下を記載

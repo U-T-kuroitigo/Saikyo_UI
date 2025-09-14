@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/U-T-kuroitigo/eaticle_go_server/functions"
+	"github.com/U-T-kuroitigo/Saikyo_UI/functions"
 	"github.com/labstack/echo"
 )
 

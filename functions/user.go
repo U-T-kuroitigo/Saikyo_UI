@@ -3,9 +3,9 @@ package functions
 import (
 	"net/http"
 
-	"github.com/U-T-kuroitigo/eaticle_go_server/configuration"
-	"github.com/U-T-kuroitigo/eaticle_go_server/models"
-	"github.com/U-T-kuroitigo/eaticle_go_server/response"
+	"github.com/U-T-kuroitigo/Saikyo_UI/configuration"
+	"github.com/U-T-kuroitigo/Saikyo_UI/models"
+	"github.com/U-T-kuroitigo/Saikyo_UI/response"
 	"github.com/labstack/echo"
 	"gorm.io/gorm"
 )

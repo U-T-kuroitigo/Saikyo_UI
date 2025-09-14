@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/U-T-kuroitigo/eaticle_go_server/configuration"
-	"github.com/U-T-kuroitigo/eaticle_go_server/routes"
+	"github.com/U-T-kuroitigo/Saikyo_UI/configuration"
+	"github.com/U-T-kuroitigo/Saikyo_UI/routes"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )

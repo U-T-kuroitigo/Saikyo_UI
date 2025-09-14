@@ -6,7 +6,7 @@ import (
 
 	"fmt"
 
-	"github.com/U-T-kuroitigo/eaticle_go_server/models"
+	"github.com/U-T-kuroitigo/Saikyo_UI/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
