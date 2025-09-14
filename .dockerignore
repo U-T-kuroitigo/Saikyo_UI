@@ -1,0 +1,10 @@
+.git
+.gitignore
+.gitattributes
+init.txt
+**/*.log
+**/node_modules
+**/.vscode
+**/.idea
+coverage
+bin

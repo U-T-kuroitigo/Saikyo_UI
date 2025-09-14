@@ -1,4 +1,5 @@
-以下コンソールで実行
+# ===== 責任者が実行 =====
+# 以下コンソールで実行
 go mod init github.com/U-T-kuroitigo/Saikyo_UI
 go get -u github.com/labstack/echo/...
 go get -u gorm.io/gorm
@@ -8,13 +9,32 @@ go get github.com/joho/godotenv
 go get "github.com/go-playground/validator/v10"
 go mod tidy
 
-開発環境用
-replace github.com/U-T-kuroitigo/Saikyo_UI => //ローカルフォルダの絶対パス
+# 開発環境用のローカル参照（go.mod）
+# replace github.com/U-T-kuroitigo/Saikyo_UI => //ローカルフォルダの絶対パス
 
-.envファイルを作成
-ファイル内に以下を記載
-Server = "host名"
-Port = "使用ポート"
-User = "使用ユーザー"
-Password = "パスワード"
-Database = "使用データベース"
+
+# ===== 開発者が実行 =====
+# ===== 起動テスト手順 =====
+
+# 1) .env を用意（.env.example をコピーして値を埋める）
+cp .env.example .env
+
+# 2) ビルド & 起動
+docker compose up -d --build
+
+# 3) コンテナの状態確認
+docker compose ps
+
+# 4) healthcheck 通過確認（app, db が healthy になるか確認）
+# Windows PowerShell では jq が使えないので以下のように確認
+#   docker inspect saikyo_api | Select-String '"Status"'
+# Linux/Mac の場合は jq が利用可能
+#   docker inspect --format='{{json .State.Health}}' saikyo_api | jq
+
+# 5) API動作確認
+curl http://localhost:8080/health
+# => HTTP/1.1 200 OK が返ること
+
+# 6) 問題があればログを確認
+docker compose logs app
+docker compose logs db

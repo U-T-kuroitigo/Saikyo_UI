@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saikyo_api
+    ports:
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}"
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/home/appuser/.env:ro
+    working_dir: /home/appuser
+    environment:
+      TZ: "${TZ:-Asia/Tokyo}"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:${APP_PORT:-8080}/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: saikyo_mysql
+    env_file:
+      - .env
+    command: >
+      mysqld
+      --character-set-server=${MYSQL_CHARSET:-utf8mb4}
+      --collation-server=${MYSQL_COLLATION:-utf8mb4_0900_ai_ci}
+    ports:
+      - "${MYSQL_HOST_PORT:-33306}:3306"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD || exit 1",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  db_data:
