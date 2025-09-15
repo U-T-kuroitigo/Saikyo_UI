@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order · Saikyo_UI</title>
+    <!-- Tailwind CDN（開発検証用） -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <header class="bg-emerald-500 text-white font-bold p-4">
+      Saikyo_UI · Order Page
+    </header>
+
+    <main class="max-w-2xl mx-auto mt-8 bg-white p-6 rounded-xl shadow">
+      <h1 class="text-2xl font-semibold mb-6">メニューから注文を作成</h1>
+
+      <form id="orderForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">メニュー</label>
+          <select
+            id="menuSelect"
+            class="w-full rounded border px-3 py-2"
+            required
+          >
+            <option value="">読み込み中...</option>
+          </select>
+          <p id="menuDesc" class="text-sm text-slate-600 mt-2"></p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            id="submitBtn"
+            type="submit"
+            class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 text-white px-4 py-2 hover:bg-emerald-700 disabled:opacity-60"
+          >
+            注文する
+          </button>
+          <span id="status" class="text-sm text-slate-600"></span>
+        </div>
+      </form>
+
+      <div class="mt-6">
+        <h2 class="font-semibold mb-2">注文結果</h2>
+        <pre
+          id="result"
+          class="bg-slate-900 text-slate-100 p-4 rounded overflow-x-auto text-sm"
+        ></pre>
+      </div>
+    </main>
+
+    <script>
+      const select = document.getElementById("menuSelect");
+      const desc = document.getElementById("menuDesc");
+      const form = document.getElementById("orderForm");
+      const statusEl = document.getElementById("status");
+      const resultEl = document.getElementById("result");
+      const submitBtn = document.getElementById("submitBtn");
+
+      let menuItems = [];
+
+      async function loadMenu() {
+        select.innerHTML = '<option value="">読み込み中...</option>';
+        desc.textContent = "";
+        try {
+          const res = await fetch("/api/menu");
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          menuItems = Array.isArray(data.menu) ? data.menu : [];
+          if (menuItems.length === 0) {
+            select.innerHTML =
+              '<option value="">メニューが見つかりません</option>';
+            return;
+          }
+          select.innerHTML =
+            '<option value="">選択してください</option>' +
+            menuItems
+              .map((m) => `<option value="${m.id}">${m.name}</option>`)
+              .join("");
+        } catch (e) {
+          select.innerHTML = '<option value="">取得に失敗しました</option>';
+          statusEl.textContent = "メニュー取得エラー: " + e.message;
+        }
+      }
+
+      select.addEventListener("change", () => {
+        const id = select.value;
+        const found = menuItems.find((m) => m.id === id);
+        desc.textContent = found ? found.description || "" : "";
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = select.value;
+        if (!id) {
+          statusEl.textContent = "メニューを選択してください";
+          return;
+        }
+
+        statusEl.textContent = "送信中...";
+        resultEl.textContent = "";
+        submitBtn.disabled = true;
+
+        try {
+          const res = await fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ menu_item_id: id }),
+          });
+          const text = await res.text();
+          // JSON っぽければ整形
+          try {
+            const json = JSON.parse(text);
+            resultEl.textContent = JSON.stringify(json, null, 2);
+          } catch (_) {
+            resultEl.textContent = text;
+          }
+          statusEl.textContent = res.ok ? "注文作成に成功" : "注文作成でエラー";
+        } catch (e) {
+          statusEl.textContent = "送信エラー: " + e.message;
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+
+      loadMenu();
+    </script>
+  </body>
+</html>
