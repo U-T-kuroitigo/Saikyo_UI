@@ -3,6 +3,9 @@ package routes
 import (
 	"github.com/U-T-kuroitigo/Saikyo_UI/functions"
 	"github.com/labstack/echo"
+
+	apiHandlers "github.com/U-T-kuroitigo/Saikyo_UI/handlers/api"
+	webHandlers "github.com/U-T-kuroitigo/Saikyo_UI/handlers/web"
 )
 
 func userRoutes(e *echo.Echo) {
@@ -15,4 +18,7 @@ func userRoutes(e *echo.Echo) {
 
 func StartRoutes(e *echo.Echo) {
 	userRoutes(e)
+
+	webHandlers.RegisterTestRoutes(e)
+	apiHandlers.RegisterMenuRoutes(e)
 }

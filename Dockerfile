@@ -35,6 +35,9 @@ WORKDIR /home/appuser
 
 # アプリ本体配置
 COPY --from=builder /app/app /usr/local/bin/app
+# テンプレートと静的ファイルも配置
+COPY --from=builder /app/views  /home/appuser/views
+COPY --from=builder /app/public /home/appuser/public
 
 # コンテナ外へ公開するアプリのポート（例：8080）
 # 実際のListenは main.go 側で 0.0.0.0:8080 にしておく
