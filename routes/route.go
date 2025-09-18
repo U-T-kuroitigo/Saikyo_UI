@@ -24,4 +24,6 @@ func StartRoutes(e *echo.Echo) {
 	apiHandlers.RegisterMenuRoutes(e)
 	webHandlers.RegisterOrderPageRoutes(e)
 	apiHandlers.RegisterOrderAPIRoutes(e)
+
+	webHandlers.RegisterMenuPageRoutes(e)
 }
