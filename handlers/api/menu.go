@@ -2,12 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log" // エラーロギング用のパッケージ
+	"io"
+	"log"
 	"math/rand"
 	"os"
 	"strconv"
-	"time"
 )
 
 // Store は店舗情報を保持する構造体
@@ -22,9 +21,6 @@ var correctFoods = []string{"鰻", "かき氷", "タイ料理", "和食"}
 
 // initはパッケージの初期化時に一度だけ実行される
 func init() {
-	// 乱数生成器のシードを設定
-	rand.Seed(time.Now().UnixNano())
-
 	// JSONファイルから店舗データを読み込む
 	jsonFile, err := os.Open("public/json/food_stores.json")
 	if err != nil {
@@ -33,7 +29,7 @@ func init() {
 	}
 	defer jsonFile.Close()
 
-	byteValue, err := ioutil.ReadAll(jsonFile)
+	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
 		// ファイルを読み込めなかった場合、エラーをログに出力してアプリケーションを停止する
 		log.Fatalf("FATAL: public/json/food_stores.json を読み込めませんでした: %v", err)
@@ -160,4 +156,3 @@ func getFoods(q1, q2 string) []string {
 	}
 	return result
 }
-
