@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log" // エラーロギング用のパッケージ
 	"math/rand"
 	"os"
 	"strconv"
@@ -20,27 +20,39 @@ type Store struct {
 var stores []Store
 var correctFoods = []string{"鰻", "かき氷", "タイ料理", "和食"}
 
-// init関数はパッケージの初期化時に一度だけ実行される
+// initはパッケージの初期化時に一度だけ実行される
 func init() {
-	// 乱数のシードを設定
+	// 乱数生成器のシードを設定
 	rand.Seed(time.Now().UnixNano())
 
 	// JSONファイルから店舗データを読み込む
-	jsonFile, err := os.Open("json/food_stores.json")
+	jsonFile, err := os.Open("public/json/food_stores.json")
 	if err != nil {
-		fmt.Println("Error opening JSON file:", err)
-		return
+		// ファイルを開けなかった場合、エラーをログに出力してアプリケーションを停止する
+		log.Fatalf("FATAL: public/json/food_stores.json を開けませんでした: %v", err)
 	}
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal(byteValue, &stores)
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		// ファイルを読み込めなかった場合、エラーをログに出力してアプリケーションを停止する
+		log.Fatalf("FATAL: public/json/food_stores.json を読み込めませんでした: %v", err)
+	}
+
+	err = json.Unmarshal(byteValue, &stores)
+	if err != nil {
+		// JSONのパースに失敗した場合、エラーをログに出力してアプリケーションを停止する
+		log.Fatalf("FATAL: public/json/food_stores.json のパースに失敗しました: %v", err)
+	}
+
+	// ファイルが正しく読み込まれた場合に成功メッセージをログに出力する
+	log.Println("正常に", len(stores), "件の店舗情報を public/json/food_stores.json から読み込みました")
 }
 
-// ProcessMenuStep はフォームの入力値を受け取り、次に表示すべき内容を決定して返す
+// ProcessMenuStep はフォームの入力値に基づいて、ユーザーフローの次のステップを決定する
 func ProcessMenuStep(params map[string]string) map[string]interface{} {
 	step, ok := params["step"]
-	// stepがなければ最初の質問画面を表示
+	// 'step' が存在しない場合は、最初のアクセスとみなす
 	if !ok {
 		return map[string]interface{}{"CurrentStep": "q1"}
 	}
@@ -82,7 +94,7 @@ func ProcessMenuStep(params map[string]string) map[string]interface{} {
 
 		idx := q1*16 + q2*4 + q3
 
-		// かき氷ルートの場合
+		// 特別な「かき氷」ルートを処理する
 		if q3Str == "かき氷" {
 			return map[string]interface{}{
 				"CurrentStep": "ice_flavor",
@@ -91,7 +103,7 @@ func ProcessMenuStep(params map[string]string) map[string]interface{} {
 			}
 		}
 
-		// 通常の結果表示
+		// 通常の結果表示を処理する
 		var recommendedStore Store
 		for _, s := range stores {
 			if s.Genre == q3Str {
@@ -116,18 +128,18 @@ func ProcessMenuStep(params map[string]string) map[string]interface{} {
 		}
 	}
 
-	// 不正なステップの場合は最初の質問に戻す
+	// 不正なステップの場合は、最初の質問にデフォルトで戻す
 	return map[string]interface{}{"CurrentStep": "q1"}
 }
 
-// getFoods は質問3の選択肢を決定するヘルパー関数
+// getFoods は質問3の食べ物の選択肢リストを決定する
 func getFoods(q1, q2 string) []string {
-	// 質問1が「サプライズが欲しい」かつ質問2が「誰かと楽しく」の場合のみ、かき氷ルートへ
+	// ユーザーが「サプライズ」を望み、「誰かと」一緒にいる場合は、特別な食べ物リストを表示する
 	if q1 == "2" && q2 == "1" {
 		return correctFoods
 	}
 
-	// それ以外はダミーの選択肢を生成
+	// それ以外の場合は、ダミーの選択肢をランダムに生成する
 	allGenres := make([]string, 0, len(stores))
 	for _, s := range stores {
 		allGenres = append(allGenres, s.Genre)
@@ -148,3 +160,4 @@ func getFoods(q1, q2 string) []string {
 	}
 	return result
 }
+
