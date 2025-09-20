@@ -1,22 +1,40 @@
 {
-  // タブ幅を4に指定
-  "editor.tabSize": 4,
+	// タブ幅を4に指定
+	"editor.tabSize": 4,
 
-  // Tabキーでスペースを挿入せず、タブ文字を使用
-  "editor.insertSpaces": false,
+	// Tabキーでスペースを挿入せず、タブ文字を使用
+	"editor.insertSpaces": false,
 
-  // ファイル内容に合わせて自動で判定しない（常に固定）
-  "editor.detectIndentation": false,
+	// ファイル内容に合わせて自動で判定しない（常に固定）
+	"editor.detectIndentation": false,
 
-  // 保存時に自動フォーマットを実行
-  "editor.formatOnSave": true,
+	// 保存時に自動フォーマットを実行
+	"editor.formatOnSave": true,
 
-  // ファイル末尾に必ず改行を追加
-  "files.insertFinalNewline": true,
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.insertSpaces": false,
+		"editor.tabSize": 2
+	},
+	"[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+	"[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.insertSpaces": false,
+		"editor.tabSize": 2
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.insertSpaces": false,
+		"editor.tabSize": 2
+	},
 
-  // 行末の余計な空白を削除
-  "files.trimTrailingWhitespace": true,
+	// ファイル末尾に必ず改行を追加
+	"files.insertFinalNewline": true,
 
-  // 改行コードを LF に統一（Win/Mac/Linux 混在環境で便利）
-  "files.eol": "\n"
+	// 行末の余計な空白を削除
+	"files.trimTrailingWhitespace": true,
+
+	// 改行コードを LF に統一（Win/Mac/Linux 混在環境で便利）
+	"files.eol": "\n"
 }
