@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	// 自身のプロジェクトパスに合わせて変更してください
-	"your_project_module/api"
+	"github.com/U-T-kuroitigo/Saikyo_UI/handlers/api"
 
 	"github.com/labstack/echo"
 )
