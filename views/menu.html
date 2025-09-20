@@ -9,7 +9,7 @@
         <h1>注文システム</h1>
 
         {{if eq .CurrentStep "q1"}}
-        <form action="/" method="POST">
+        <form action="/menu" method="POST">
             <input type="hidden" name="step" value="q1">
             <h2>質問1：今日はどんな気分？</h2>
             <label><input type="radio" name="q1" value="0" checked> 元気いっぱい！</label>
@@ -21,7 +21,7 @@
         {{end}}
 
         {{if eq .CurrentStep "q2"}}
-        <form action="/" method="POST">
+        <form action="/menu" method="POST">
             <input type="hidden" name="step" value="q2">
             <input type="hidden" name="q1" value="{{.Q1}}">
             <h2>質問2：食事のスタイルは？</h2>
@@ -34,7 +34,7 @@
         {{end}}
 
         {{if eq .CurrentStep "q3"}}
-        <form action="/" method="POST">
+        <form action="/menu" method="POST">
             <input type="hidden" name="step" value="q3">
             <input type="hidden" name="q1" value="{{.Q1}}">
             <input type="hidden" name="q2" value="{{.Q2}}">
@@ -47,7 +47,7 @@
         {{end}}
 
         {{if eq .CurrentStep "ice_flavor"}}
-        <form action="/" method="POST">
+        <form action="/menu" method="POST">
             <input type="hidden" name="step" value="ice_flavor">
             <input type="hidden" name="idx" value="{{.Index}}">
             <h2>好きなかき氷の味は？</h2>
