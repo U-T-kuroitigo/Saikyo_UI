@@ -6,32 +6,53 @@ const FLAVOR_TO_API_ID = {
 	オレンジ: "giiku-camp",
 };
 
-/**
- * フォームのUI（見た目）の状態を更新します。
- * @param {object} elements - 操作するDOM要素の集まりです。
- * @param {boolean} isLoading - ローディング状態（true）か通常状態（false）かを指定します。
- * @param {string} [message] - 表示するメッセージです。
- * @param {boolean} [isError] - メッセージがエラーかどうかを示します。
- */
-function updateUIState(elements, isLoading, message = "", isError = false) {
-	elements.orderBtn.disabled = isLoading;
-	elements.orderBtn.textContent = isLoading ? "注文中..." : "決定";
+// 注文状況を定期的に確認するためのタイマーIDを保持する変数
+let statusPollingInterval = null;
 
-	if (message) {
-		elements.resultDiv.textContent = message;
-		elements.resultDiv.style.color = isError ? "red" : "black";
-	} else {
-		elements.resultDiv.textContent = "";
+/**
+ * 注文状況をAPIに問い合わせて、画面表示を更新します。
+ * @param {string} orderId - 確認対象の注文IDです。
+ * @param {HTMLElement} statusElement - 状況を表示するためのDOM要素です。
+ */
+async function checkOrderStatus(orderId, statusElement) {
+	try {
+		const response = await fetch(
+			// `https://kakigori-api.fly.dev/v1/stores/UQHVDAEW/orders/${orderId}`
+			`/api/orders/${orderId}`
+		);
+		if (!response.ok) {
+			// APIからのエラー応答はコンソールに出力するのみで、画面表示は変更しない
+			console.error("Status check failed:", response.status);
+			return;
+		}
+		const result = await response.json();
+
+		// APIから返されたstatusに応じて表示を切り替える
+		if (result.status === "pending") {
+			statusElement.textContent = "準備中...";
+		} else if (result.status === "waitingPickup") {
+			statusElement.textContent = "作成完了！";
+			// 完了したら定期確認を停止する
+			clearInterval(statusPollingInterval);
+		}
+	} catch (error) {
+		console.error("Status check fetch error:", error);
 	}
 }
 
 /**
- * 注文が成功したときの画面を表示します。
- * @param {object} elements - 操作するDOM要素の集まりです。
- * @param {string} message - 表示する成功メッセージです。
+ * 注文状況の定期的な確認を開始します。
+ * @param {string} orderId - 確認対象の注文IDです。
+ * @param {HTMLElement} statusElement - 状況を表示するためのDOM要素です。
  */
-function showSuccessUI(elements, message) {
-	elements.orderSection.innerHTML = `<h2>注文完了！</h2><p>${message}</p>`;
+function startStatusPolling(orderId, statusElement) {
+	// 最初に一度すぐに状況を確認
+	checkOrderStatus(orderId, statusElement);
+	// その後、10秒ごとに繰り返し確認
+	statusPollingInterval = setInterval(
+		() => checkOrderStatus(orderId, statusElement),
+		10000
+	);
 }
 
 /**
@@ -56,7 +77,9 @@ async function handleOrderSubmit(event, elements) {
 		return;
 	}
 
-	updateUIState(elements, true); // UIを「注文中」の状態に更新
+	// UIを「注文中」の状態に更新
+	elements.orderBtn.disabled = true;
+	elements.orderBtn.textContent = "注文中...";
 
 	try {
 		// サーバーのAPIエンドポイントに注文データを送信
@@ -69,20 +92,31 @@ async function handleOrderSubmit(event, elements) {
 		const result = await response.json(); // サーバーからの応答をJSONとして解釈
 
 		if (response.ok) {
-			// 成功した場合
-			showSuccessUI(elements, result.message || "注文を受け付けました。");
+			// 成功した場合: フォームを非表示にし、受け取り番号と状況を表示
+			elements.orderSection.innerHTML = `
+        <h2>ご注文ありがとうございます</h2>
+        <p>受け取り番号: <strong>${result.order_number}</strong></p>
+        <p>状況: <span id="order-status-text"></span></p>
+      `;
+			// 新しく作成した状況表示用の要素を取得
+			const statusElement = document.getElementById("order-status-text");
+			// 注文状況の定期確認を開始
+			startStatusPolling(result.id, statusElement);
 		} else {
 			// 失敗した場合
-			updateUIState(
-				elements,
-				false,
-				`エラー: ${result.error || "注文に失敗しました。"}`,
-				true
-			);
+			elements.resultDiv.textContent = `エラー: ${
+				result.error || "注文に失敗しました。"
+			}`;
+			elements.resultDiv.style.color = "red";
+			elements.orderBtn.disabled = false;
+			elements.orderBtn.textContent = "決定";
 		}
 	} catch (error) {
 		// 通信自体に失敗した場合
-		updateUIState(elements, false, "通信エラーが発生しました。", true);
+		elements.resultDiv.textContent = "通信エラーが発生しました。";
+		elements.resultDiv.style.color = "red";
+		elements.orderBtn.disabled = false;
+		elements.orderBtn.textContent = "決定";
 		console.error("Fetch Error:", error);
 	}
 }

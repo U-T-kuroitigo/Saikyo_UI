@@ -1,18 +1,12 @@
 package api
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"math/rand"
-	"net/http"
 	"os"
 	"strconv"
-	"time"
-
-	"github.com/labstack/echo"
 )
 
 // Store は店舗情報を保持する構造体
@@ -210,59 +204,4 @@ func getFoods(q1, q2 string) []string {
 	return result
 }
 
-// --- ここから下は注文APIのロジック ---
-
-// RegisterIceOrderAPIRoutes は注文APIのエンドポイントを登録します。
-func RegisterIceOrderAPIRoutes(e *echo.Echo) {
-	e.POST("/api/orders", createOrder)
-}
-
-// createOrder はクライアントからの注文リクエストを受け取り、外部APIへ中継します。
-func createOrder(c echo.Context) error {
-	// ▼▼▼ ハードコードされたIDを環境変数から読み込むように修正 ▼▼▼
-	storeID := os.Getenv("STORE_ID")
-	if storeID == "" {
-		log.Println("エラー: 環境変数 STORE_ID が設定されていません。")
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "サーバーの設定エラーです。"})
-	}
-	// ▲▲▲ ここまで修正 ▲▲▲
-
-	// クライアントからのリクエストボディを読み込む
-	body, err := io.ReadAll(c.Request().Body)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "リクエストボディが不正です"})
-	}
-
-	// 外部APIのエンドポイントURLを構築
-	url := fmt.Sprintf("https://kakigori-api.fly.dev/v1/stores/%s/orders", storeID)
-
-	// 外部APIへの新しいリクエストを作成
-	req, err := http.NewRequestWithContext(c.Request().Context(), http.MethodPost, url, bytes.NewReader(body))
-	if err != nil {
-		c.Logger().Errorf("注文APIプロキシ: リクエスト構築エラー: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "リクエストの構築に失敗しました"})
-	}
-	// ヘッダーを設定
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "SaikyoUI/1.0 (+echo)")
-
-	// HTTPクライアントを作成し、リクエストを送信
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		c.Logger().Errorf("注文APIプロキシ: 外部APIへのリクエストエラー: %v", err)
-		return c.JSON(http.StatusBadGateway, map[string]string{"error": "外部APIへのリクエストに失敗しました"})
-	}
-	defer resp.Body.Close()
-
-	// 外部APIからのレスポンスボディを読み込む
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		c.Logger().Errorf("注文APIプロキシ: レスポンスボディの読み込みエラー: %v", err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "外部APIのレスポンス読み込みに失敗しました"})
-	}
-
-	// 外部APIからのステータスコードとレスポンスボディを、そのままクライアントに返す
-	return c.Blob(resp.StatusCode, "application/json", respBody)
-}
 
