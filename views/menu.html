@@ -1,109 +1,105 @@
 <!doctype html>
 <html>
-  <head>
-    <title>注文システム</title>
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <!-- スタイル設定 -->
-    <style>
-      /* 注文ボタンの基本スタイル */
-      #order-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: background-color 0.2s;
-      }
-      /* ボタンにマウスが乗った時のスタイル */
-      #order-btn:hover {
-        background-color: #0056b3;
-      }
-      /* ボタンが無効（ローディング中）のスタイル */
-      #order-btn:disabled {
-        background-color: #6c757d;
-        cursor: not-allowed;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>注文システム</h1>
+	<head>
+		<title>注文システム</title>
+		<link rel="stylesheet" href="/static/css/style.css" />
+		<!-- スタイル設定 -->
+		<style>
+			/* 注文ボタンの基本スタイル */
+			#order-btn {
+				background-color: #007bff;
+				color: white;
+				padding: 10px 15px;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+				margin-top: 10px;
+				transition: background-color 0.2s;
+			}
+			/* ボタンにマウスが乗った時のスタイル */
+			#order-btn:hover {
+				background-color: #0056b3;
+			}
+			/* ボタンが無効（ローディング中）のスタイル */
+			#order-btn:disabled {
+				background-color: #6c757d;
+				cursor: not-allowed;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>注文システム</h1>
 
-      {{if eq .CurrentStep "q1"}}
-      <form action="/menu" method="POST">
-        <input type="hidden" name="step" value="q1" />
-        <h2>質問1：今日はどんな気分？</h2>
-        <label
-          ><input type="radio" name="q1" value="0" />
-          元気いっぱい！</label
-        >
-        <label><input type="radio" name="q1" value="1" /> のんびりしたい</label>
-        <label
-          ><input type="radio" name="q1" value="2" /> サプライズが欲しい</label
-        >
-        <label><input type="radio" name="q1" value="3" /> 癒されたいな</label>
-        <input type="submit" value="次へ" />
-      </form>
-      {{end}} {{if eq .CurrentStep "q2"}}
-      <form action="/menu" method="POST">
-        <input type="hidden" name="step" value="q2" />
-        <input type="hidden" name="q1" value="{{.Q1}}" />
-        <h2>質問2：食事のスタイルは？</h2>
-        <label
-          ><input type="radio" name="q2" value="0" checked />
-          ひとりでゆっくり</label
-        >
-        <label><input type="radio" name="q2" value="1" /> 誰かと楽しく</label>
-        <label
-          ><input type="radio" name="q2" value="2" /> 持ち帰りで手軽に</label
-        >
-        <label
-          ><input type="radio" name="q2" value="3" />
-          お店の雰囲気を楽しみたい</label
-        >
-        <input type="submit" value="次へ" />
-      </form>
-      {{end}} {{if eq .CurrentStep "q3"}}
-      <form action="/menu" method="POST">
-        <input type="hidden" name="step" value="q3" />
-        <input type="hidden" name="q1" value="{{.Q1}}" />
-        <input type="hidden" name="q2" value="{{.Q2}}" />
-        <h2>質問3：好きな食べ物は？</h2>
-        {{range .Foods}}
-        <label><input type="radio" name="q3" value="{{.}}" /> {{.}}</label>
-        {{end}}
-        <input type="submit" value="決定" />
-      </form>
-      {{end}} {{if eq .CurrentStep "ice_flavor"}}
-      <!-- かき氷注文セクション -->
-      <div id="ice-order-section">
-        <form id="ice-form">
-          <h2>好きなかき氷の味は？</h2>
-          {{range .Flavors}}
-          <label
-            ><input type="radio" name="flavor" value="{{.}}" /> {{.}}</label
-          >
-          {{end}}
-          <button type="button" id="order-btn">決定</button>
-        </form>
-        <!-- 注文結果表示エリア -->
-        <div id="order-result"></div>
-      </div>
-      {{end}} {{if eq .CurrentStep "result"}}
-      <h2>結果</h2>
-      <p>
-        <a href="{{.StoreURL}}" target="_blank" rel="noopener noreferrer">
-          {{.Result}}
-        </a>
-      </p>
-      {{end}}
-    </div>
+			{{if eq .CurrentStep "q1"}}
+			<form action="/menu" method="POST">
+				<input type="hidden" name="step" value="q1" />
+				<h2>質問1：今日はどんな気分？</h2>
+				<label><input type="radio" name="q1" value="0" /> 元気いっぱい！</label>
+				<label><input type="radio" name="q1" value="1" /> のんびりしたい</label>
+				<label
+					><input type="radio" name="q1" value="2" /> サプライズが欲しい</label
+				>
+				<label><input type="radio" name="q1" value="3" /> 癒されたいな</label>
+				<input type="submit" value="次へ" />
+			</form>
+			{{end}} {{if eq .CurrentStep "q2"}}
+			<form action="/menu" method="POST">
+				<input type="hidden" name="step" value="q2" />
+				<input type="hidden" name="q1" value="{{.Q1}}" />
+				<h2>質問2：食事のスタイルは？</h2>
+				<label
+					><input type="radio" name="q2" value="0" checked />
+					ひとりでゆっくり</label
+				>
+				<label><input type="radio" name="q2" value="1" /> 誰かと楽しく</label>
+				<label
+					><input type="radio" name="q2" value="2" /> 持ち帰りで手軽に</label
+				>
+				<label
+					><input type="radio" name="q2" value="3" />
+					お店の雰囲気を楽しみたい</label
+				>
+				<input type="submit" value="次へ" />
+			</form>
+			{{end}} {{if eq .CurrentStep "q3"}}
+			<form action="/menu" method="POST">
+				<input type="hidden" name="step" value="q3" />
+				<input type="hidden" name="q1" value="{{.Q1}}" />
+				<input type="hidden" name="q2" value="{{.Q2}}" />
+				<h2>質問3：好きな食べ物は？</h2>
+				{{range .Foods}}
+				<label><input type="radio" name="q3" value="{{.}}" /> {{.}}</label>
+				{{end}}
+				<input type="submit" value="決定" />
+			</form>
+			{{end}} {{if eq .CurrentStep "ice_flavor"}}
+			<!-- かき氷注文セクション -->
+			<div id="ice-order-section">
+				<form id="ice-form">
+					<h2>好きなかき氷の味は？</h2>
+					{{range .Flavors}}
+					<label
+						><input type="radio" name="flavor" value="{{.}}" /> {{.}}</label
+					>
+					{{end}}
+					<button type="button" id="order-btn">決定</button>
+				</form>
+				<!-- 注文結果表示エリア -->
+				<div id="order-result"></div>
+			</div>
+			{{end}} {{if eq .CurrentStep "result"}}
+			<h2>結果</h2>
+			<p>
+				<a href="{{.StoreURL}}" target="_blank" rel="noopener noreferrer">
+					{{.Result}}
+				</a>
+			</p>
+			{{end}}
+		</div>
 
-    <!-- ▼▼▼ 修正：外部JavaScriptファイルを読み込む ▼▼▼ -->
-    <script src="/static/js/menu.js" defer></script>
-    <!-- ▲▲▲ ここまで ▲▲▲ -->
-  </body>
+		<!-- ▼▼▼ 修正：外部JavaScriptファイルを読み込む ▼▼▼ -->
+		<script src="/static/js/menu.js" defer></script>
+		<!-- ▲▲▲ ここまで ▲▲▲ -->
+	</body>
 </html>
-
