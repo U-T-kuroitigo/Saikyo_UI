@@ -16,7 +16,7 @@ func RegisterOrderAPIRoutes(e *echo.Echo) {
 	e.POST("/api/orders", createOrder)
 }
 
-func createOrder(c echo.Context) error {
+func createOrders(c echo.Context) error {
 	storeID := os.Getenv("STORE_ID")
 	if storeID == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "STORE_ID is empty"})

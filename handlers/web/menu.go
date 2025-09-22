@@ -3,22 +3,26 @@ package web
 import (
 	"net/http"
 
-	// 自身のプロジェクトパスに合わせて変更してください
 	"github.com/U-T-kuroitigo/Saikyo_UI/handlers/api"
-
 	"github.com/labstack/echo"
 )
 
-// メニューページのルートを登録
+// RegisterMenuPageRoutes はメニューページのルートを登録します。
 func RegisterMenuPageRoutes(e *echo.Echo) {
 	e.GET("/menu", HandleMenu)
 	e.POST("/menu", HandleMenu)
 }
 
-// HandleMenuはリクエストをロジック層に渡し、結果をレンダリングする
+// HandleMenuはリクエストをロジック層に渡し、結果をレンダリングします。
 func HandleMenu(c echo.Context) error {
-	// フォームの全パラメータをマップに変換
-	formParams, _ := c.FormParams()
+	// フォームの全パラメータをマップに変換します
+	// c.FormParams() はPOSTリクエストの application/x-www-form-urlencoded 形式のボディを解析します
+	formParams, err := c.FormParams()
+	if err != nil {
+		c.Logger().Errorf("フォームパラメータの解析に失敗しました: %v", err)
+		return c.String(http.StatusBadRequest, "リクエストの形式が正しくありません。")
+	}
+
 	params := make(map[string]string)
 	for k, v := range formParams {
 		if len(v) > 0 {
@@ -26,12 +30,16 @@ func HandleMenu(c echo.Context) error {
 		}
 	}
 
-	// GETリクエストの場合はparamsが空のマップになる
-	// POSTリクエストの場合は送信されたフォームの値が入る
-
-	// ビジネスロジックを呼び出して、表示すべきデータを取得
+	// ビジネスロジックを呼び出して、表示すべきデータを取得します
 	data := api.ProcessMenuStep(params)
 
-	// テンプレートとデータを渡してHTMLを生成
-	return c.Render(http.StatusOK, "menu.html", data)
+	// main.goで設定されたレンダラーを使い、テンプレートとデータを渡してHTMLを生成します
+	// これにより、リクエストごとにファイルを読み込む必要がなくなります
+	if err := c.Render(http.StatusOK, "menu.html", data); err != nil {
+		c.Logger().Errorf("テンプレートのレンダリングに失敗しました: %v", err)
+		return err
+	}
+
+	return nil
 }
+
