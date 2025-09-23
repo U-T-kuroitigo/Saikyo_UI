@@ -1,44 +1,207 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
-	"net/http"
+	"log"
+	"math/rand"
 	"os"
-	"time"
-
-	"github.com/labstack/echo"
+	"strconv"
 )
 
-// RegisterMenuRoutes registers API proxy routes.
-func RegisterMenuRoutes(e *echo.Echo) {
-	e.GET("/api/menu", proxyMenu)
+// Store は店舗情報を保持する構造体
+type Store struct {
+	Name  string `json:"name"`
+	Genre string `json:"genre"`
+	URL   string `json:"url"`
 }
 
-func proxyMenu(c echo.Context) error {
-	storeID := os.Getenv("STORE_ID")
-	if storeID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "STORE_ID is empty"})
-	}
+// グローバル変数：アプリケーション全体で利用するデータを保持
+var (
+	// genreToStoreMapは、ジャンル名から店舗情報への高速なアクセスのために使用
+	genreToStoreMap map[string]Store
+	// allGenresは、JSONから読み込んだ全てのユニークなジャンルを保持
+	allGenres []string
+)
 
-	url := fmt.Sprintf("https://kakigori-api.fly.dev/v1/stores/%s/menu", storeID)
+// correctFoodsは、特定の条件で表示される正解の食べ物リスト
+var correctFoods = []string{"鰻", "かき氷", "タイ料理", "和食"}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return c.JSON(http.StatusBadGateway, map[string]string{"error": err.Error()})
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-
-	return c.Blob(resp.StatusCode, "application/json", body)
+// foodToIndexMapは、食べ物の名前をインデックス計算用の数値に変換するために使用
+var foodToIndexMap = map[string]int{
+	"鰻":    0,
+	"かき氷":  1,
+	"タイ料理": 2,
+	"和食":   3,
 }
+
+// initはパッケージの初期化時に一度だけ実行される
+func init() {
+	// JSONファイルから店舗データを読み込む
+	jsonFile, err := os.Open("public/json/food_stores.json")
+	if err != nil {
+		log.Fatalf("FATAL: public/json/food_stores.json を開けませんでした: %v", err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, err := io.ReadAll(jsonFile)
+	if err != nil {
+		log.Fatalf("FATAL: public/json/food_stores.json を読み込めませんでした: %v", err)
+	}
+
+	var stores []Store
+	if err := json.Unmarshal(byteValue, &stores); err != nil {
+		log.Fatalf("FATAL: public/json/food_stores.json のパースに失敗しました: %v", err)
+	}
+
+	// 読み込んだデータを効率的に利用できるよう、マップを初期化
+	genreToStoreMap = make(map[string]Store)
+	uniqueGenres := make(map[string]bool)
+	for _, s := range stores {
+		if _, ok := genreToStoreMap[s.Genre]; !ok {
+			genreToStoreMap[s.Genre] = s
+		}
+		if !uniqueGenres[s.Genre] {
+			uniqueGenres[s.Genre] = true
+			allGenres = append(allGenres, s.Genre)
+		}
+	}
+
+	log.Println("正常に", len(stores), "件の店舗情報を public/json/food_stores.json から読み込みました")
+}
+
+// ProcessMenuStep はフォームの入力値に基づいて、ユーザーフローの次のステップを決定する
+func ProcessMenuStep(params map[string]string) map[string]interface{} {
+	step, ok := params["step"]
+	if !ok {
+		return map[string]interface{}{"CurrentStep": "q1"}
+	}
+
+	q1Val := params["q1"]
+	q2Val := params["q2"]
+
+	switch step {
+	case "q1":
+		if q1Val == "" {
+			return map[string]interface{}{
+				"CurrentStep": "q1",
+				"Error":       "選択してください。",
+			}
+		}
+		return map[string]interface{}{
+			"CurrentStep": "q2",
+			"Q1":          q1Val,
+		}
+
+	case "q2":
+		if q2Val == "" {
+			return map[string]interface{}{
+				"CurrentStep": "q2",
+				"Q1":          q1Val,
+				"Error":       "選択してください。",
+			}
+		}
+		return map[string]interface{}{
+			"CurrentStep": "q3",
+			"Q1":          q1Val,
+			"Q2":          q2Val,
+			"Foods":       getFoods(q1Val, q2Val),
+		}
+
+	case "q3":
+		q3Val := params["q3"]
+		if q3Val == "" {
+			return map[string]interface{}{
+				"CurrentStep": "q3",
+				"Q1":          q1Val,
+				"Q2":          q2Val,
+				"Foods":       getFoods(q1Val, q2Val),
+				"Error":       "選択してください。",
+			}
+		}
+
+		// 特別な「かき氷」ルートを処理する
+		if q3Val == "かき氷" {
+			q1, _ := strconv.Atoi(q1Val)
+			q2, _ := strconv.Atoi(q2Val)
+			q3 := foodToIndexMap["かき氷"]
+			idx := q1*16 + q2*4 + q3
+
+			return map[string]interface{}{
+				"CurrentStep": "ice_flavor",
+				"Index":       idx,
+				"Flavors":     []string{"いちご", "メロン", "ブルーハワイ", "オレンジ"},
+			}
+		}
+
+		// 通常の結果表示を処理する
+		recommendedStore, storeExists := genreToStoreMap[q3Val]
+		if !storeExists {
+			log.Printf("ERROR: おすすめの店舗が見つかりません genre=%s", q3Val)
+			return map[string]interface{}{"CurrentStep": "q1", "Error": "おすすめ店舗が見つかりませんでした。"}
+		}
+
+		resultData := map[string]interface{}{
+			"CurrentStep": "result",
+			"Result":      recommendedStore.Name + "のお店をオススメします！",
+			"StoreURL":    recommendedStore.URL,
+		}
+
+		return resultData
+
+	case "ice_flavor":
+		// このステップは、ブラウザからの通常のフォーム送信では到達しません。
+		// JavaScriptからのAPI呼び出しが /api/orders を直接叩くため、このロジックは主に画面表示の再生成用です。
+		q1, _ := strconv.Atoi(q1Val)
+		q2, _ := strconv.Atoi(q2Val)
+		q3 := foodToIndexMap["かき氷"]
+		idx := q1*16 + q2*4 + q3
+
+		return map[string]interface{}{
+			"CurrentStep": "ice_flavor",
+			"Index":       idx,
+			"Flavors":     []string{"いちご", "メロン", "ブルーハワイ", "オレンジ"},
+		}
+	}
+
+	// 不正なステップの場合は、最初の質問にデフォルトで戻す
+	return map[string]interface{}{"CurrentStep": "q1"}
+}
+
+// getFoods は質問3の食べ物の選択肢リストを決定する
+func getFoods(q1, q2 string) []string {
+	if q1 == "2" && q2 == "1" {
+		return correctFoods
+	}
+
+	seed, err := strconv.ParseInt(q1+q2, 10, 64)
+	if err != nil {
+		seed = 1
+	}
+	r := rand.New(rand.NewSource(seed))
+
+	shuffledGenres := make([]string, len(allGenres))
+	copy(shuffledGenres, allGenres)
+
+	r.Shuffle(len(shuffledGenres), func(i, j int) {
+		shuffledGenres[i], shuffledGenres[j] = shuffledGenres[j], shuffledGenres[i]
+	})
+
+	correctFoodSet := make(map[string]bool)
+	for _, food := range correctFoods {
+		correctFoodSet[food] = true
+	}
+
+	var result []string
+	for _, genre := range shuffledGenres {
+		if !correctFoodSet[genre] {
+			result = append(result, genre)
+			if len(result) == 4 {
+				break
+			}
+		}
+	}
+	return result
+}
+
+

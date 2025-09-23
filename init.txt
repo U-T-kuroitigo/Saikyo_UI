@@ -38,3 +38,10 @@ curl http://localhost:8080/health
 # 6) 問題があればログを確認
 docker compose logs app
 docker compose logs db
+
+
+# ===== プロジェクトファイル全てに自動整形 =====
+# Go以外のファイル
+npx prettier --write .
+# Goファイル
+go fmt ./...
