@@ -2,6 +2,7 @@ package web
 
 import (
 	"net/http"
+
 	"github.com/labstack/echo"
 )
 
@@ -9,7 +10,6 @@ import (
 func RegisterTermsRoutes(e *echo.Echo) {
 	e.GET("/", TermsPage)
 	e.GET("/terms", TermsPage)
-	e.GET("/agreed", AgreedPage)
 	e.GET("/rejected", RejectedPage)
 }
 
@@ -27,4 +27,3 @@ func AgreedPage(c echo.Context) error {
 func RejectedPage(c echo.Context) error {
 	return c.Render(http.StatusOK, "rejected_page.html", nil)
 }
-
