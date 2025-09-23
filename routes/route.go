@@ -14,12 +14,18 @@ func userRoutes(e *echo.Echo) {
 	e.POST("api/v2/user", functions.CreateUser)   // CREATE
 	e.PUT("api/v2/user", functions.UpdateUser)    // UPDATE
 	e.DELETE("api/v2/user", functions.DeleteUser) // DELETE
+
 }
 
 func StartRoutes(e *echo.Echo) {
 	userRoutes(e)
 
+	// Webページのルート
 	webHandlers.RegisterTestRoutes(e)
+	webHandlers.RegisterOrderPageRoutes(e)
+
+	// 利用規約関連のルート
+	webHandlers.RegisterTermsRoutes(e)
 
 	webHandlers.RegisterOrderPageRoutes(e)
 	apiHandlers.RegisterOrderAPIRoutes(e)
