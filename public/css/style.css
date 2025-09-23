@@ -73,3 +73,34 @@ p {
 	line-height: 1.6;
 	margin-top: 20px;
 }
+
+/* レスポンシブ対応 */
+@media (max-width: 600px) {
+	body {
+		padding: 0;
+	}
+
+	.container {
+		padding: 20px;
+		border-radius: 0;
+		box-shadow: none;
+		min-height: 100vh;
+	}
+
+	h1 {
+		font-size: 1.8rem;
+	}
+
+	h2 {
+		font-size: 1.3rem;
+	}
+
+	label {
+		font-size: 1rem;
+	}
+
+	input[type="submit"], #order-btn {
+		padding: 15px 20px;
+		font-size: 1rem;
+	}
+}

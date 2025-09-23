@@ -2,19 +2,26 @@
 <html>
 	<head>
 		<title>注文システム</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="/static/css/style.css" />
 		<!-- スタイル設定 -->
 		<style>
-			/* 注文ボタンの基本スタイル */
+			/* 注文ボタンのスタイルを input[type="submit"] と統一 */
 			#order-btn {
 				background-color: #007bff;
 				color: white;
-				padding: 10px 15px;
+				padding: 12px 25px;
 				border: none;
 				border-radius: 5px;
+				font-size: 1.1rem;
 				cursor: pointer;
-				margin-top: 10px;
-				transition: background-color 0.2s;
+				transition: background-color 0.3s ease;
+				width: 100%;
+				margin-top: 25px;
+				/* button要素のデフォルトスタイルをリセット */
+				-webkit-appearance: none;
+				-moz-appearance: none;
+				appearance: none;
 			}
 			/* ボタンにマウスが乗った時のスタイル */
 			#order-btn:hover {
