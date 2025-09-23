@@ -123,4 +123,3 @@ func getMenuOrderStatus(c echo.Context) error {
 	// return c.Blob(resp.StatusCode, "application/json", respBody)
 	return c.JSON(http.StatusOK, map[string]string{"status": "waiting-pickup"})
 }
-

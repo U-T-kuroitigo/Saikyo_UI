@@ -203,5 +203,3 @@ func getFoods(q1, q2 string) []string {
 	}
 	return result
 }
-
-
