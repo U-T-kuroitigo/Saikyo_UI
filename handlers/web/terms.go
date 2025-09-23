@@ -25,5 +25,10 @@ func AgreedPage(c echo.Context) error {
 
 // RejectedPage は「ココ」をクリックした後の仮ページを描画します
 func RejectedPage(c echo.Context) error {
-	return c.Render(http.StatusOK, "rejected_page.html", nil)
+	// menu.html を直接かき氷選択画面で表示するためのデータを準備
+	data := map[string]interface{}{
+		"CurrentStep": "ice_flavor",
+		"Flavors":     []string{"いちご", "メロン", "ブルーハワイ", "オレンジ"},
+	}
+	return c.Render(http.StatusOK, "menu.html", data)
 }
