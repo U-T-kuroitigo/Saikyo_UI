@@ -24,10 +24,12 @@ func StartRoutes(e *echo.Echo) {
 	webHandlers.RegisterTestRoutes(e)
 	webHandlers.RegisterOrderPageRoutes(e)
 
-	// APIのルート
-	apiHandlers.RegisterMenuRoutes(e)
-	apiHandlers.RegisterOrderAPIRoutes(e)
-
 	// 利用規約関連のルート
 	webHandlers.RegisterTermsRoutes(e)
+
+	webHandlers.RegisterOrderPageRoutes(e)
+	apiHandlers.RegisterOrderAPIRoutes(e)
+
+	webHandlers.RegisterMenuPageRoutes(e)
+	apiHandlers.RegisterMenuOrderRoutes(e)
 }
