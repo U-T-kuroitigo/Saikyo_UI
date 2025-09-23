@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saikyo_UI - 利用規約</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* クリック可能な単語にカーソルを合わせるとポインターに変わるように設定 */
+        .secret-word {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-teal-500 text-white p-4 shadow-md">
+        <h1 class="text-2xl font-bold">Saikyo_UI - Terms of Service</h1>
+    </header>
+
+    <main class="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg max-w-4xl">
+        <h2 class="text-3xl font-bold text-center mb-6">技育祭かき氷注文システム 利用規約</h2>
+        <p class="text-center mb-8">本規約は、当システムをご利用いただく際の条件を定めるものです。ご注文をもって本規約に同意したものとみなします。</p>
+
+        <div class="space-y-6 text-gray-700">
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第1条（目的）</h3>
+                <p>本システムは、利用者がかき氷を快適かつ安全に注文できるよう提供されるものです。</p>
+            </section>
+
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第2条（禁止事項）</h3>
+                <p>利用者は以下の行為を行ってはなりません。<br>
+                ・虚偽の情報を用いての注文<br>
+                ・不正アクセス、システムの改ざんや妨害行為<br>
+                ・その他、当システムの運営を妨害する行為</p>
+            </section>
+            
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第3条（提供されるサービス）</h3>
+                <p>当システムを通じて、利用者は希望するフレーバーのかき氷を注文できます。<br>
+                提供されるかき氷の品質について、運営は最大限の注意を払います。<br>
+                配送や提供方法は別途定める<span id="secret-1" class="secret-word">ガイドライン</span>に従うものとします。</p>
+            </section>
+
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第4条（突如として発生する特記事項）</h3>
+                <p>当システムは、注文時にまれに「かき氷ではなく氷山」を誤って配送する場合があります。返品は港湾クレーンを用意できる方のみ受け付けます。<br>
+                提供されるシロップの中には、「<span id="secret-2" class="secret-word">ブルーハワイ</span>」のほかに「ブルースクリーン」「ブルースリー」「ブルーマウンテン」などが混入することがあります。味は保証されません。<br>
+                利用者がかき氷を一定量以上注文すると、自動的に氷属性魔法使いの資格試験が始まる場合があります。</p>
+            </section>
+
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第5条（利用者の責任）</h3>
+                <p>かき氷の食べ過ぎによる頭痛は自己責任とします。<br>
+                万が一、かき氷の摂取により異世界に転移した場合でも、当システムは一切の責任を負いません。<br>
+                当システムを利用した結果、利用者が雪男認定された場合、以後の生活はご自身で対処していただきます。</p>
+            </section>
+
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第6条（免責事項）</h3>
+                <p>当システムは以下の事象に関し、責任を負いません。<br>
+                ・かき氷が<span id="secret-3" class="secret-word">富士山</span>サイズで到着した場合<br>
+                ・注文後に室内気温がマイナス50℃になった場合<br>
+                ・配達員がペンギン、もしくはシロクマだった場合</p>
+            </section>
+
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第7条（準拠法および裁判管轄）</h3>
+                <p>本規約はかき氷王国の法律に準拠します。万一紛争が発生した場合、あなたは徴兵されシロップじゃんけんにより解決するものとします。</p>
+            </section>
+
+            <section>
+                <h3 class="text-xl font-semibold border-b-2 border-teal-400 pb-2 mb-3">第8条（最後の選択）</h3>
+                <p>上記の条件をすべて拒否し普通にかき氷を注文したい場合はガイドライン、ブルーハワイ、富士山を順番にクリックしてください</p>
+            </section>
+        </div>
+
+        <div class="text-center mt-10">
+            <a href="/order" class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-xl">
+                同意して注文に進む
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // クリックの順番を管理する変数
+        let clickSequence = 0;
+
+        // 対象となる単語の要素を取得
+        const word1 = document.getElementById('secret-1');
+        const word2 = document.getElementById('secret-2');
+        const word3 = document.getElementById('secret-3');
+
+        // 1番目の単語のクリックイベント
+        word1.addEventListener('click', () => {
+            if (clickSequence === 0) {
+                clickSequence++; // 正しい順番なので、次のステップに進める
+            } else {
+                clickSequence = 0; // 順番が違うのでリセット
+            }
+        });
+
+        // 2番目の単語のクリックイベント
+        word2.addEventListener('click', () => {
+            if (clickSequence === 1) {
+                clickSequence++; // 正しい順番なので、次のステップに進める
+            } else {
+                clickSequence = 0; // 順番が違うのでリセット
+            }
+        });
+
+        // 3番目の単語のクリックイベント
+        word3.addEventListener('click', () => {
+            if (clickSequence === 2) {
+                // 3番目まで正しい順番でクリックされたらページを遷移
+                window.location.href = '/rejected';
+            } else {
+                clickSequence = 0; // 順番が違うのでリセット
+            }
+        });
+    </script>
+</body>
+</html>
+
