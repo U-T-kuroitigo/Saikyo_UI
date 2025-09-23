@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Test · Saikyo_UI</title>
+		<!-- Tailwind CSS (CDN) 開発確認用 -->
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body class="bg-slate-50 text-slate-900">
+		<header class="bg-sky-500 text-white font-bold p-4">
+			Saikyo_UI · Test Page
+		</header>
+
+		<main class="max-w-2xl mx-auto mt-8 bg-white p-6 rounded-xl shadow">
+			<h1 class="text-2xl font-semibold mb-4">外部APIメニュー取得テスト</h1>
+
+			<p class="text-sm text-slate-600 mb-4">
+				このページは Tailwind + JS を使って
+				<code>/api/menu</code> にアクセスし、 外部API
+				<code>https://kakigori-api.fly.dev/v1/stores/{STORE_ID}/menu</code>
+				の結果を表示します。
+			</p>
+
+			<form id="menuForm" class="space-y-3">
+				<div>
+					<label class="block text-sm font-medium">Store ID（参照のみ）</label>
+					<input
+						id="storeId"
+						type="text"
+						class="mt-1 w-full rounded border px-3 py-2 bg-slate-100"
+						value="{{.StoreID}}"
+						readonly
+					/>
+				</div>
+				<button
+					type="submit"
+					class="inline-flex items-center gap-2 rounded-lg bg-sky-600 text-white px-4 py-2 hover:bg-sky-700"
+				>
+					メニューを取得
+				</button>
+			</form>
+
+			<div id="status" class="mt-4 text-sm text-slate-600"></div>
+
+			<pre
+				id="result"
+				class="mt-4 bg-slate-900 text-slate-100 p-4 rounded overflow-x-auto text-sm"
+			></pre>
+		</main>
+
+		<script src="/static/js/test.js"></script>
+	</body>
+</html>

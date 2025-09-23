@@ -1,0 +1,29 @@
+{
+	"useTabs": true,
+	"tabWidth": 4,
+	"trailingComma": "es5",
+
+	"overrides": [
+		{
+			"files": ["*.html"],
+			"options": {
+				"useTabs": true,
+				"tabWidth": 2
+			}
+		},
+		{
+			"files": ["*.json", "*.jsonc"],
+			"options": {
+				"useTabs": true,
+				"tabWidth": 2
+			}
+		},
+		{
+			"files": ["*.yml", "*.yaml"],
+			"options": {
+				"useTabs": true,
+				"tabWidth": 2
+			}
+		}
+	]
+}

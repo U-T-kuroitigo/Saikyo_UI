@@ -1,0 +1,107 @@
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f4f4f4;
+	color: #333;
+	margin: 0;
+	padding: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	box-sizing: border-box;
+}
+
+.container {
+	background-color: #fff;
+	padding: 40px 50px;
+	border-radius: 10px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 600px;
+	text-align: center;
+}
+
+h1 {
+	color: #555;
+	margin-bottom: 20px;
+	font-size: 2.2rem;
+}
+
+h2 {
+	color: #666;
+	margin-top: 30px;
+	margin-bottom: 15px;
+	font-size: 1.5rem;
+}
+
+form {
+	text-align: left;
+}
+
+label {
+	display: block;
+	margin-bottom: 10px;
+	font-size: 1.1rem;
+	cursor: pointer;
+}
+
+input[type="radio"] {
+	margin-right: 10px;
+	transform: scale(1.2);
+	cursor: pointer;
+}
+
+input[type="submit"] {
+	background-color: #007bff;
+	color: white;
+	padding: 12px 25px;
+	border: none;
+	border-radius: 5px;
+	font-size: 1.1rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	width: 100%;
+	margin-top: 25px;
+}
+
+input[type="submit"]:hover {
+	background-color: #0056b3;
+}
+
+p {
+	font-size: 1.2rem;
+	line-height: 1.6;
+	margin-top: 20px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 600px) {
+	body {
+		padding: 0;
+	}
+
+	.container {
+		padding: 20px;
+		border-radius: 0;
+		box-shadow: none;
+		min-height: 100vh;
+	}
+
+	h1 {
+		font-size: 1.8rem;
+	}
+
+	h2 {
+		font-size: 1.3rem;
+	}
+
+	label {
+		font-size: 1rem;
+	}
+
+	input[type="submit"],
+	#order-btn {
+		padding: 15px 20px;
+		font-size: 1rem;
+	}
+}

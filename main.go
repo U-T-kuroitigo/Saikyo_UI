@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"io"
 	"net/http"
 	"os"
 
@@ -10,6 +12,15 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
+
+// Echo用テンプレートレンダラ
+// views/*.html を読み込む
+// main.go 側で初期化のみ行い、ルート処理は routes/handlers に分離
+type Template struct{ templates *template.Template }
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
 
 func main() {
 	// データベースの初期化
@@ -23,6 +34,15 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
+
+	// 静的ファイル配信（/static 配下で public/ を提供）
+	e.Static("/static", "public")
+
+	// テンプレートレンダラ登録（views/*.html を対象）
+	t := &Template{
+		templates: template.Must(template.ParseGlob("views/*.html")),
+	}
+	e.Renderer = t
 
 	// ===== ヘルスチェック用エンドポイント =====
 	// /health: DB依存なし → コンテナのライブネス確認に使う
